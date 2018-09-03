@@ -1,0 +1,6 @@
+.git
+doc
+e2e
+node_modules
+npm-debug.log
+./*.sh
