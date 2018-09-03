@@ -1,0 +1,8 @@
+version: '2' # Specify the docker-compose version number
+
+# Define the services/containers to be run
+services:
+  client: # The name of the first service
+    build: angular6-electron # Specify the directory of the Dockerfile
+    ports:
+      - "4200:4200" # Specify the port to be forwarded
