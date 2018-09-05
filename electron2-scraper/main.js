@@ -44,8 +44,8 @@ ipcMain.on('consoleError', function(event, data) {
 });
 
 function createWindow () {
-	//const debug = true;
-	const debug = false;
+	const debug = true;
+	//const debug = false;
 	const windowWidth = debug ? 1000 : 435;
 	const windowHeight = debug ? 500 : 35;
 
@@ -87,13 +87,13 @@ function createWindow () {
 	mainWindow.setPosition(screenDimensions.width - windowWidth, screenDimensions.height - windowHeight - windows10TaskbarHeight);
 
 	// For best results on Windows, use an .ico file. See https://electronjs.org/docs/api/tray .
-	/*
-	const tray = new Tray('./assets/favicon.ico');
+	//const tray = new Tray();
+	//const tray = new Tray('./assets/favicon.ico');
+	const tray = new Tray('./assets/favicon1_32x32.png');
 
 	tray.on('click', () => {
 		mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
 	});
-	*/
 
 	/* These two Tray events are available on macOS only.
 	tray.on('mouse-enter', () => {

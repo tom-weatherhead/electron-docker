@@ -1,0 +1,26 @@
+{
+	"label": "CADUSD=X",
+	"url": "https://ca.finance.yahoo.com/quote/CADUSD%3DX",
+	"timerIntervalInMilliseconds": 20000,
+	"regexes": [
+		"/data-reactid=\\\"51\\\"\\>([0-9\\.]+)\\<\\/span/",
+		"/\\<span.+data-reactid=\\\"67\\\"\\>([0-9\\.]+)\\<\\/span/",
+		"/\\<span.+data-reactid=\\\"35\\\"\\>([0-9\\.]+)\\<\\/span/",
+		"/\\<span.+data-reactid=\\\"36\\\"\\>([0-9\\+\\-\\.\\%\\(\\)]+)\\<\\/span/",
+		"/\\<span.+data-reactid=\\\"38\\\"\\>([^\\<]+)\\<\\/span/"
+	],
+	"options": {
+		"returnHttpResponseStatus": true
+	},
+	"stringificationTemplate": [
+		"CADUSD=X",
+		2,
+		3,
+		"Bid",
+		0,
+		"Ask",
+		1,
+		4
+	],
+	"specialTimeOfDayIndex": 4
+}
