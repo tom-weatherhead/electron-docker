@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain, Tray} = require('electron');
+const { app, BrowserWindow, ipcMain, Tray } = require('electron');
 
 // See https://stackoverflow.com/questions/32780726/how-to-access-dom-elements-in-electron :
 
@@ -30,9 +30,12 @@ ipc.on('invokeAction', function(event, data){
 let mainWindow;
 
 ipcMain.on('minimizeWindow', function(event, data) {
-    // var result = processData(data);
-    // event.sender.send('actionReply', result);
-	mainWindow.minimize();
+	// var result = processData(data);
+	// event.sender.send('actionReply', result);
+	//console.log('ipcMain.on(\'minimizeWindow\');');
+	//mainWindow.minimize();
+	console.log('ipcMain.on(\'minimizeWindow\'); -> app.quit();');
+	app.quit();
 });
 
 ipcMain.on('consoleLog', function(event, data) {
@@ -44,18 +47,20 @@ ipcMain.on('consoleError', function(event, data) {
 });
 
 function createWindow () {
-	const debug = true;
-	//const debug = false;
+	//const debug = true;
+	const debug = false;
+	//const isWindows = true;
+	const isWindows = false;
 	const windowWidth = debug ? 1000 : 435;
 	const windowHeight = debug ? 500 : 35;
+	const margin = 20;
 
 	// 45 is an estimate of the height of the Windows taskbar.
 	// -> 40px ? See https://www.reddit.com/r/Windows10/comments/6rv7ot/on_a_1920x1080_display_at_native_resolution_how/
-	const windows10TaskbarHeight = 40;
+	const windows10TaskbarHeight = isWindows ? 40 : 0;
 
 	// Create the browser window:
 	mainWindow = new BrowserWindow({width: windowWidth, height: windowHeight, frame: false});
-	//mainWindow = new BrowserWindow({width: 200, height: 100});
 
 	//console.log('mainWindow is', mainWindow);
 
@@ -84,12 +89,13 @@ function createWindow () {
 
 	console.log(`Primary display: ${screenDimensions.width} x ${screenDimensions.height}`);
 
-	mainWindow.setPosition(screenDimensions.width - windowWidth, screenDimensions.height - windowHeight - windows10TaskbarHeight);
+	mainWindow.setPosition(screenDimensions.width - windowWidth - margin, screenDimensions.height - windowHeight - windows10TaskbarHeight - margin);
 
 	// For best results on Windows, use an .ico file. See https://electronjs.org/docs/api/tray .
-	//const tray = new Tray();
-	//const tray = new Tray('./assets/favicon.ico');
-	const tray = new Tray('./assets/favicon1_32x32.png');
+	const faviconFilename = isWindows ? 'favicon.ico' : 'favicon1_32x32.png';
+	//const tray = new Tray('./assets/favicon.ico'); // Windows 10
+	//const tray = new Tray('./assets/favicon1_32x32.png'); // Ubuntu 18.04
+	const tray = new Tray('./assets/' + faviconFilename);
 
 	tray.on('click', () => {
 		mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
