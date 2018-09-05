@@ -1,6 +1,6 @@
 #!/bin/sh
 xhost local:root
-docker run --rm -m 512m --security-opt seccomp=unconfined -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY electron2-trading-app
+docker run --rm -m 512m --security-opt seccomp=unconfined -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY electron2-scraper
 
 # This works, but with a libudev error message: docker run --rm -m 512m -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY electron2-trading-app
 

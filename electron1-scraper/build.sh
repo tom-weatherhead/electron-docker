@@ -1,2 +1,2 @@
 #!/bin/sh
-docker build -t electron1-trading-app .
+docker build -t electron1-scraper .

@@ -1,5 +1,5 @@
 {
-  "name": "electron1-trading-app",
+  "name": "electron1-scraper",
   "version": "0.0.0",
   "description": "A Web page scraper implemented in Electron and Node.js",
   "main": "main.js",
