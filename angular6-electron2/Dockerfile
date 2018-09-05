@@ -1,12 +1,15 @@
 # Create image based off of the official Node Slim image
 FROM node:8
 
+# rm -rf dist/ && rm -f package-lock.json && rm -rf node_modules/ && npm i && npm run electron-build
+
 RUN apt-get update
 
-# RUN apt-get install -yq libgtk2.0-dev libx11-xcb-dev libxss-dev libgconf2-dev libnss3-dev libasound2-dev libxtst-dev libcanberra-gtk-dev
-RUN apt-get install -yq libgtk-3-dev libx11-xcb-dev libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev
+# RUN apt-get install -yq libgtk-3-dev libx11-xcb-dev libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev
 
-# This fails: RUN apt-get install -yq ttf-mscorefonts-installer
+# Adding audio support: See https://github.com/TheBiggerGuy/docker-pulseaudio-example
+# See also https://stackoverflow.com/questions/41083436/how-to-play-sound-in-a-docker-container
+RUN apt-get install -yq libgtk-3-dev libx11-xcb-dev libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev pulseaudio-utils
 
 # Create a directory where our app will be placed
 RUN mkdir -p /usr/src/app
@@ -27,3 +30,4 @@ COPY . .
 # Serve the app
 CMD ["/usr/src/app/node_modules/.bin/electron", "/usr/src/app/"]
 # CMD ["npm", "run", "electron-build"]
+# CMD ["npm", "run", "electron"]
