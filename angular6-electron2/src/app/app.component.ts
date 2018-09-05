@@ -1,10 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-//import 'rxjs/add/observable/interval';
-import { interval } from 'rxjs';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/takeWhile';
-import 'rxjs/add/operator/do';
+import { interval, Observable } from 'rxjs';
+import { map, takeWhile, tap } from 'rxjs/operators';
 
 
 @Component({
@@ -18,12 +14,13 @@ export class AppComponent {
   current = 0;
 
   start() {
-    //const interval = Observable.interval(100);
-    const interval1 = interval(100);
+    const myInterval = interval(100);
     
-    interval1
-      .takeWhile(_ => !this.isFinished )
-      .do(i => this.current += 0.1)
+    myInterval
+      .pipe(
+	      takeWhile(_ => !this.isFinished ),
+	      tap(i => this.current += 0.1)
+      )
       .subscribe();
   }
 
