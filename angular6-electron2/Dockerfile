@@ -1,5 +1,6 @@
 # Create image based off of the official Node Slim image
-FROM node:8
+# FROM node:10
+FROM node:slim
 
 # rm -rf dist/ && rm -f package-lock.json && rm -rf node_modules/ && npm i && npm run electron-build
 
@@ -28,6 +29,6 @@ COPY . .
 # ? ADD . .
 
 # Serve the app
-CMD ["/usr/src/app/node_modules/.bin/electron", "/usr/src/app/"]
-# CMD ["npm", "run", "electron-build"]
+# CMD ["/usr/src/app/node_modules/.bin/electron", "/usr/src/app/"]
 # CMD ["npm", "run", "electron"]
+CMD ["npm", "run", "electron-build"]
