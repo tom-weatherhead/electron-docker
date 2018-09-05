@@ -3,10 +3,15 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular.io-example": {
+    "angular6-electron2": {
       "root": "",
       "projectType": "application",
       "prefix": "app",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -30,7 +35,7 @@
             ],
             "styles": [
               {
-                "input": "src/styles.css"
+                "input": "src/styles.scss"
               }
             ],
             "scripts": []
@@ -58,18 +63,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "angular.io-example:build"
+            "browserTarget": "angular6-electron2:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "angular.io-example:build:production"
+              "browserTarget": "angular6-electron2:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular.io-example:build"
+            "browserTarget": "angular6-electron2:build"
           }
         },
         "lint": {
@@ -86,7 +91,7 @@
         }
       }
     },
-    "angular.io-example-e2e": {
+    "angular6-electron2-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -94,7 +99,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "angular.io-example:serve"
+            "devServerTarget": "angular6-electron2:serve"
           }
         },
         "lint": {
