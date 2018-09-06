@@ -13,7 +13,9 @@ RUN apt-get update
 
 # RUN apt-get install -yq libgtk-3-common libx11-xcb1 libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev alsa-base alsa-utils pulseaudio pulseaudio-utils
 
-RUN apt-get install -yq libgtk-3-common libx11-xcb1 libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev alsa-base alsa-utils pulseaudio-utils
+# RUN apt-get install -yq libgtk-3-common libx11-xcb1 libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev alsa-base alsa-utils pulseaudio-utils
+
+RUN apt-get install -yq libgtk-3-common libx11-xcb1 libxss1 libgconf-2-4 libnss3 libasound2-dev libcanberra-gtk3-dev alsa-base alsa-utils pulseaudio-utils
 
 # Create a directory where our app will be placed
 RUN mkdir -p /usr/src/app
