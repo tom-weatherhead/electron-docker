@@ -3,45 +3,17 @@
 FROM node:slim
 LABEL maintainer="tom.weatherhead@example.com"
 
-# **** START **** from https://github.com/TheBiggerGuy/docker-pulseaudio-example
-
-# ENV UNAME pacat
-
-# RUN apt-get update \
-#  && DEBIAN_FRONTEND=noninteractive apt-get install --yes pulseaudio-utils
-
-# Set up the user
-# RUN export UNAME=$UNAME UID=1000 GID=1000 && \
-#     mkdir -p "/home/${UNAME}" && \
-#     echo "${UNAME}:x:${UID}:${GID}:${UNAME} User,,,:/home/${UNAME}:/bin/bash" >> /etc/passwd && \
-#     echo "${UNAME}:x:${UID}:" >> /etc/group && \
-#     mkdir -p /etc/sudoers.d && \
-#     echo "${UNAME} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${UNAME} && \
-#     chmod 0440 /etc/sudoers.d/${UNAME} && \
-#     chown ${UID}:${GID} -R /home/${UNAME} && \
-#     gpasswd -a ${UNAME} audio
-
-# COPY pulse-client.conf /etc/pulse/client.conf
-
-# USER $UNAME
-# ENV HOME /home/pacat
-
-# run
-# CMD ["pacat", "-vvvv", "/dev/urandom"]
-
-# **** END ****
-
-# rm -rf dist/ && rm -f package-lock.json && rm -rf node_modules/ && npm i && npm run electron-build
-
 ENV UNAME tomw
 
 RUN apt-get update
 
-# RUN apt-get install -yq libgtk-3-dev libx11-xcb-dev libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev
+# RUN apt-get install -yq libgtk-3-dev libx11-xcb-dev libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev alsa-base alsa-utils pulseaudio pulseaudio-utils
 
-# Adding audio support: See https://github.com/TheBiggerGuy/docker-pulseaudio-example
-# See also https://stackoverflow.com/questions/41083436/how-to-play-sound-in-a-docker-container
-RUN apt-get install -yq libgtk-3-dev libx11-xcb-dev libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev alsa-base alsa-utils pulseaudio pulseaudio-utils
+# RUN apt-get install -yq libgtk-3-common libx11-xcb-dev libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev alsa-base alsa-utils pulseaudio pulseaudio-utils
+
+# RUN apt-get install -yq libgtk-3-common libx11-xcb1 libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev alsa-base alsa-utils pulseaudio pulseaudio-utils
+
+RUN apt-get install -yq libgtk-3-common libx11-xcb1 libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev alsa-base alsa-utils pulseaudio-utils
 
 # Create a directory where our app will be placed
 RUN mkdir -p /usr/src/app
@@ -65,6 +37,7 @@ COPY . .
 # The user "node" is using UID 1000 and GID 1000, so "tomw" will use 1001.
 
 # Set up the user
+# Stolen from https://github.com/TheBiggerGuy/docker-pulseaudio-example
 RUN export UNAME=$UNAME UID=1001 GID=1001 && \
     mkdir -p "/home/${UNAME}" && \
     echo "${UNAME}:x:${UID}:${GID}:${UNAME} User,,,:/home/${UNAME}:/bin/bash" >> /etc/passwd && \
@@ -73,7 +46,7 @@ RUN export UNAME=$UNAME UID=1001 GID=1001 && \
     echo "${UNAME} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${UNAME} && \
     chmod 0440 /etc/sudoers.d/${UNAME} && \
     chown ${UID}:${GID} -R /home/${UNAME} && \
-    chown ${UID}:${GID} -R /usr/src/app && \
+    chown ${UID}:${GID} -R /usr/src/app/dist && \
     gpasswd -a ${UNAME} audio
 
 COPY pulse-client.conf /etc/pulse/client.conf
@@ -83,5 +56,5 @@ ENV HOME /home/tomw
 
 # Serve the app
 # CMD ["/usr/src/app/node_modules/.bin/electron", "/usr/src/app/"]
-# CMD ["npm", "run", "electron"]
-CMD ["npm", "run", "electron-build"]
+CMD ["npm", "run", "electron"]
+# CMD ["npm", "run", "electron-build"]
