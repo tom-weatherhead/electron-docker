@@ -1,2 +1,2 @@
 #!/bin/sh
-docker build -t angular6-electron2 .
+docker build -t angular6-electron2:latest .

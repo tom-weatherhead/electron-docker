@@ -2,38 +2,35 @@ import { Component, OnInit } from '@angular/core';
 import { interval, Observable } from 'rxjs';
 import { map, takeWhile, tap } from 'rxjs/operators';
 
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
   max     = 1;
   current = 0;
 
   start() {
     const myInterval = interval(100);
-    
+
     myInterval
       .pipe(
-	      takeWhile(_ => !this.isFinished ),
-	      tap(i => this.current += 0.1)
+        takeWhile(_ => !this.isFinished ),
+        tap(i => this.current += 0.1)
       )
       .subscribe();
   }
 
-   /// finish timer
+  /// Finish timer
   finish() {
     this.current = this.max;
   }
 
-  /// reset timer
+  /// Reset timer
   reset() {
     this.current = 0;
   }
-
 
   /// Getters to prevent NaN errors
 
@@ -48,7 +45,4 @@ export class AppComponent {
   get isFinished() {
     return this.currentVal >= this.maxVal;
   }
-
-
-
 }
