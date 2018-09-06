@@ -41,7 +41,7 @@ RUN apt-get update
 
 # Adding audio support: See https://github.com/TheBiggerGuy/docker-pulseaudio-example
 # See also https://stackoverflow.com/questions/41083436/how-to-play-sound-in-a-docker-container
-RUN apt-get install -yq libgtk-3-dev libx11-xcb-dev libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev pulseaudio-utils
+RUN apt-get install -yq libgtk-3-dev libx11-xcb-dev libxss-dev libgconf2-dev libnss3-dev libasound2-dev libcanberra-gtk3-dev alsa-base alsa-utils pulseaudio pulseaudio-utils
 
 # Create a directory where our app will be placed
 RUN mkdir -p /usr/src/app
@@ -62,8 +62,10 @@ COPY . .
 # RUN apt-get update \
 #  && DEBIAN_FRONTEND=noninteractive apt-get install --yes pulseaudio-utils
 
+# The user "node" is using UID 1000 and GID 1000, so "tomw" will use 1001.
+
 # Set up the user
-RUN export UNAME=$UNAME UID=1000 GID=1000 && \
+RUN export UNAME=$UNAME UID=1001 GID=1001 && \
     mkdir -p "/home/${UNAME}" && \
     echo "${UNAME}:x:${UID}:${GID}:${UNAME} User,,,:/home/${UNAME}:/bin/bash" >> /etc/passwd && \
     echo "${UNAME}:x:${UID}:" >> /etc/group && \
@@ -71,6 +73,7 @@ RUN export UNAME=$UNAME UID=1000 GID=1000 && \
     echo "${UNAME} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${UNAME} && \
     chmod 0440 /etc/sudoers.d/${UNAME} && \
     chown ${UID}:${GID} -R /home/${UNAME} && \
+    chown ${UID}:${GID} -R /usr/src/app && \
     gpasswd -a ${UNAME} audio
 
 COPY pulse-client.conf /etc/pulse/client.conf
