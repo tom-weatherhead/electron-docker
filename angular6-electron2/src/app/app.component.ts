@@ -25,9 +25,8 @@ export class AppComponent {
   }
 
   start() {
+    /*
     const myInterval = interval(100);
-
-    this.outputText = 'One';
 
     myInterval
       .pipe(
@@ -35,7 +34,12 @@ export class AppComponent {
         tap(i => this.current += 0.1)
       )
       .subscribe();
+    */
 
+    // this.outputText = 'One';
+
+    const scrapeIntervalLengthInMilliseconds = 10000;
+    const scrapeInterval = interval(scrapeIntervalLengthInMilliseconds);
     // const url = 'https://httpbin.org/json';
     const url = 'https://ca.finance.yahoo.com/quote/CADUSD%3DX';
     const regexes = [
@@ -46,45 +50,53 @@ export class AppComponent {
       /\<span.+data-reactid=\"38\"\>([^\<]+)\<\/span/
     ];
 
-    this.http.get(url, { responseType: 'text' })
-      .subscribe(
-        (s: any) => {
-          console.log('HTTP GET succeeded : s is', s);
-          // this.outputText = 'Get: Success';
-          // this.outputText = 'Get: ' + s.slideshow.author;
+    console.log('start(); scrapeIntervalLengthInMilliseconds is', scrapeIntervalLengthInMilliseconds);
 
-          const body = s;
-          const regexMatchResults = regexes.map(regex => {
-            const matchResult = { regex: regex, match: '', matches: [] };
+    scrapeInterval.subscribe(intervalId => {
+      console.log('scrapeInterval: intervalId is', intervalId);
 
-            // See https://stackoverflow.com/questions/432493/how-do-you-access-the-matched-groups-in-a-javascript-regular-expression
+      this.http.get(url, { responseType: 'text' })
+        .subscribe(
+          (s: any) => {
+            //console.log('HTTP GET succeeded : s is', s);
+            console.log('HTTP GET succeeded.');
+            // this.outputText = 'Get: Success';
+            // this.outputText = 'Get: ' + s.slideshow.author;
 
-            const indexOfCaptureGroup = 1;
-            let match;
+            const body = s;
+            const regexMatchResults = regexes.map(regex => {
+              const matchResult = { regex: regex, match: '', matches: [] };
 
-            while ((match = regex.exec(body)) !== null) {
-              matchResult.matches.push(match[indexOfCaptureGroup]);
+              // See https://stackoverflow.com/questions/432493/how-do-you-access-the-matched-groups-in-a-javascript-regular-expression
 
-              if (!regex.global) {
-                // See https://stackoverflow.com/questions/31969913/why-does-this-regexp-exec-cause-an-infinite-loop
-                break;
+              const indexOfCaptureGroup = 1;
+              let match;
+
+              while ((match = regex.exec(body)) !== null) {
+                matchResult.matches.push(match[indexOfCaptureGroup]);
+
+                if (!regex.global) {
+                  // See https://stackoverflow.com/questions/31969913/why-does-this-regexp-exec-cause-an-infinite-loop
+                  break;
+                }
               }
-            }
 
-            if (matchResult.matches.length > 0) {
-              matchResult.match = matchResult.matches[0];
-            }
+              if (matchResult.matches.length > 0) {
+                matchResult.match = matchResult.matches[0];
+              }
 
-            return matchResult;
-          });
-          console.log('HTTP GET succeeded : regexMatchResults is', regexMatchResults);
-          this.outputText = regexMatchResults.map(rmr => rmr.match).join(', ');
-        },
-        f => {
-          console.error('HTTP GET failed : f is', f);
-          this.outputText = 'Get: Error';
-        }
-      );
+              return matchResult;
+            });
+            console.log('regexMatchResults is', regexMatchResults);
+            this.outputText = intervalId.toString() + ' ' + regexMatchResults.map(rmr => rmr.match).join(', ');
+            console.log('outputText is', this.outputText);
+          },
+          f => {
+            console.error('HTTP GET failed : f is', f);
+            this.outputText = 'Get: Error';
+          }
+        );
+      });
   }
 
   /// Finish timer
