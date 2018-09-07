@@ -32,4 +32,6 @@
     <button class="button is-info" *ngIf="currentVal <= 0" (click)="start()">Start</button>
     <button class="button is-danger" *ngIf="!isFinished" (click)="finish()">Finish</button>
   </div>
+
+  <span id="output">{{ outputText }}</span>
 </main>
