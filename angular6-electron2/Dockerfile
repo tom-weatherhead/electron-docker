@@ -37,6 +37,11 @@ RUN npm install
 COPY . .
 # ? ADD . .
 
+# CMD ["npm", "run", "build", "--prod"]
+RUN npm run build --prod
+
+# COPY ./dist/ /usr/src/app/dist/
+
 # RUN rm -rf /usr/src/app/dist
 # RUN mkdir -p /usr/src/app/dist
 
