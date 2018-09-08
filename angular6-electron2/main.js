@@ -1,4 +1,5 @@
-const { app, BrowserWindow } = require('electron');
+const os = require('os');
+const { app, BrowserWindow, Tray } = require('electron');
 
 let win;
 
@@ -20,6 +21,20 @@ function createWindow () {
   win.on('closed', function () {
     win = null
   });
+
+  const platform = os.platform();
+
+  console.log('platform is', platform);
+
+  const isWindows = platform === 'win32';
+  const faviconFilename = isWindows ? 'favicon.ico' : 'favicon1_32x32.png';
+	//const tray = new Tray('./assets/favicon.ico'); // Windows 10
+	//const tray = new Tray('./assets/favicon1_32x32.png'); // Ubuntu 18.04
+	const tray = new Tray('./dist/assets/' + faviconFilename);
+
+	tray.on('click', () => {
+		win.isVisible() ? win.hide() : win.show();
+	});
 }
 
 // Create window on electron intialization
