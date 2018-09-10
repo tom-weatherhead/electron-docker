@@ -1,9 +1,12 @@
 <main class="content">
-  <h1>Exchange Rate Scraper</h1>
+  <!-- <h1>Exchange Rate Scraper</h1> -->
+  <h1>{{ title }}</h1>
 
   <div class="progress-wrapper" *ngIf="maxVal">
-    <div class="text" *ngIf="!isFinished">
-      {{ max - current | number: '1.1-1' }}
+    <!-- {{ max - current | number: '1.1-1' }} -->
+    <!-- <div class="text" *ngIf="!isFinished"> -->
+    <div class="text">
+      {{ current / 1000 | number: '1.1-1' }}
     </div>
 
     <!--

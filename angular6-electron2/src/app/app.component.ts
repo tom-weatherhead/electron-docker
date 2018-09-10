@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { interval, Observable } from 'rxjs';
-import { map, takeWhile, tap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { interval /*, Observable */ } from 'rxjs';
+// import { map, takeWhile, tap } from 'rxjs/operators';
+import { HttpClient /*, HttpHeaders */ } from '@angular/common/http';
+
+// import get from 'lodash/get';
 
 // Contents of settings.json :
 
@@ -33,6 +35,30 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 	"specialTimeOfDayIndex": 4
 }
  */
+
+const settings = /* require('./settings.json') || */ {
+  label: 'USDCAD=X',
+  url: 'https://ca.finance.yahoo.com/quote/USDCAD%3DX',
+  timerIntervalInMilliseconds: 20000,
+  regexes: [
+    /data-reactid=\"51\"\>([0-9\.]+)\<\/span/,
+    /\<span.+data-reactid=\"67\"\>([0-9\.]+)\<\/span/,
+    /\<span.+data-reactid=\"35\"\>([0-9\.]+)\<\/span/,
+    /\<span.+data-reactid=\"36\"\>([0-9\\+\-\.\%\(\)]+)\<\/span/,
+    /\<span.+data-reactid=\"38\"\>([^\<]+)\<\/span/
+  ],
+  stringificationTemplate: [
+    'USDCAD=X',
+    2,
+    3,
+    'Bid',
+    0,
+    'Ask',
+    1,
+    4
+  ],
+  specialTimeOfDayIndex: 4
+};
 
 /*
 const defaultSettings = {
@@ -84,12 +110,16 @@ function ensureRegex(param) {
 }
  */
 
+/*
 const httpOptions = {
   headers: new HttpHeaders({
     // 'Access-Control-Allow-Origin': '*',
     'Content-Type': 'application/json'
   })
 };
+ */
+
+// const scrapeIntervalLengthInMilliseconds = 10000;
 
 @Component({
   selector: 'app-root',
@@ -97,9 +127,12 @@ const httpOptions = {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  max     = 1;
-  current = 0;
-  outputText = 'Zero';
+  // max     = 1;
+  // current = 0;
+  title = settings.label || 'Exchange Rate Scraper';
+  max     = settings.timerIntervalInMilliseconds;
+  current = settings.timerIntervalInMilliseconds;
+  outputText = 'Starting...';
   myInterval = null;
   myIntervalSubscription = null;
 
@@ -111,7 +144,7 @@ export class AppComponent implements OnInit {
     this.start();
   }
 
-  padToTwoDigits(n) {
+  padToTwoDigits(n: number) {
     let str = '' + n;
 
     if (str.length < 2) {
@@ -121,7 +154,7 @@ export class AppComponent implements OnInit {
     return str;
   }
 
-  formatUTCDateWithoutTime(date) {
+  formatUTCDateWithoutTime(date: Date) {
       const year = date.getUTCFullYear(),
           month = this.padToTwoDigits(date.getUTCMonth() + 1),
           day = this.padToTwoDigits(date.getUTCDate());
@@ -129,35 +162,35 @@ export class AppComponent implements OnInit {
     return [year, month, day].join('-');
   }
 
-  formatUTCHoursAndMinutes(date) {
+  formatUTCHoursAndMinutes(date: Date) {
     const hours = this.padToTwoDigits(date.getUTCHours());
     const minutes = this.padToTwoDigits(date.getUTCMinutes())
 
     return `${hours}:${minutes}`;
   }
 
-  formatDate(date) {
-      // var d = new Date(date),
-      const d = date,
-        year = d.getFullYear(),
-        month = this.padToTwoDigits(d.getMonth() + 1),
-        day = this.padToTwoDigits(d.getDate()),
-        hour = this.padToTwoDigits(d.getHours()),
-        minute = this.padToTwoDigits(d.getMinutes()),
-        second = this.padToTwoDigits(d.getSeconds());
+  // formatDate(date) {
+  //     // var d = new Date(date),
+  //     const d = date,
+  //       year = d.getFullYear(),
+  //       month = this.padToTwoDigits(d.getMonth() + 1),
+  //       day = this.padToTwoDigits(d.getDate()),
+  //       hour = this.padToTwoDigits(d.getHours()),
+  //       minute = this.padToTwoDigits(d.getMinutes()),
+  //       second = this.padToTwoDigits(d.getSeconds());
 
-    return [year, month, day].join('-') + ' ' + [hour, minute, second].join(':');
-  }
+  //   return [year, month, day].join('-') + ' ' + [hour, minute, second].join(':');
+  // }
 
-  formatUTCDate(date) {
-      const hour = this.padToTwoDigits(date.getUTCHours()),
-      minute = this.padToTwoDigits(date.getUTCMinutes()),
-      second = this.padToTwoDigits(date.getUTCSeconds());
+  // formatUTCDate(date) {
+  //     const hour = this.padToTwoDigits(date.getUTCHours()),
+  //     minute = this.padToTwoDigits(date.getUTCMinutes()),
+  //     second = this.padToTwoDigits(date.getUTCSeconds());
 
-    return this.formatUTCDateWithoutTime(date) + ' ' + [hour, minute, second].join(':');
-  }
+  //   return this.formatUTCDateWithoutTime(date) + ' ' + [hour, minute, second].join(':');
+  // }
 
-  constructSpecialTimeOfDay(match) {
+  constructSpecialTimeOfDay(match: string) {
     // const timeRegexMatch = match.match(/[0-9]{1,2}\:[0-9]{2}[A|P]M [A-Z]+/);
     const timeRegexMatch = /[0-9]{1,2}\:[0-9]{2}[A|P]M [A-Z]+/.exec(match);
 
@@ -175,38 +208,7 @@ export class AppComponent implements OnInit {
   }
 
   start() {
-    // this.outputText = 'One';
-
-    const scrapeIntervalLengthInMilliseconds = 10000;
-    // const scrapeInterval = interval(scrapeIntervalLengthInMilliseconds);
-    // const url = 'https://httpbin.org/json';
-    // const url = 'https://ca.finance.yahoo.com/quote/CADUSD%3DX';
-    const url = 'https://ca.finance.yahoo.com/quote/USDCAD%3DX';
-    const regexes = [
-      /data-reactid=\"51\"\>([0-9\.]+)\<\/span/,
-      /\<span.+data-reactid=\"67\"\>([0-9\.]+)\<\/span/,
-      /\<span.+data-reactid=\"35\"\>([0-9\.]+)\<\/span/,
-      /\<span.+data-reactid=\"36\"\>([0-9\\+\-\.\%\(\)]+)\<\/span/,
-      /\<span.+data-reactid=\"38\"\>([^\<]+)\<\/span/
-    ];
-    const stringificationTemplate = [
-      'USDCAD=X',
-      2,
-      3,
-      'Bid',
-      0,
-      'Ask',
-      1,
-      4
-    ];
-    const specialTimeOfDayIndex = 4;
-
-    console.log('start(); scrapeIntervalLengthInMilliseconds is', scrapeIntervalLengthInMilliseconds);
-
-    // scrapeInterval.subscribe(intervalId => {
-    // console.log('scrapeInterval: intervalId is', intervalId);
-
-    this.http.get(url, { responseType: 'text' })
+    this.http.get(settings.url, { responseType: 'text' })
       .subscribe(
         (s: any) => {
           // console.log('HTTP GET succeeded : s is', s);
@@ -215,7 +217,7 @@ export class AppComponent implements OnInit {
           // this.outputText = 'Get: ' + s.slideshow.author;
 
           const body = s;
-          const regexMatchResults = regexes.map(regex => {
+          const regexMatchResults = settings.regexes.map(regex => {
             const matchResult = { regex: regex, match: '', matches: [] };
 
             // See https://stackoverflow.com/questions/432493/how-do-you-access-the-matched-groups-in-a-javascript-regular-expression
@@ -241,15 +243,17 @@ export class AppComponent implements OnInit {
 
           // ****
 
-          const settings = {
-            stringificationTemplate: stringificationTemplate,
-            specialTimeOfDayIndex: specialTimeOfDayIndex,
-            timerIntervalInMilliseconds: scrapeIntervalLengthInMilliseconds
-          };
-          let outputText = '';
-          let separator = '';
+          // const settings = {
+          //   stringificationTemplate: stringificationTemplate,
+          //   specialTimeOfDayIndex: specialTimeOfDayIndex,
+          //   timerIntervalInMilliseconds: scrapeIntervalLengthInMilliseconds
+          // };
+          // let outputText = '';
+          // let separator = '';
 
-          settings.stringificationTemplate.forEach(st => {
+          // settings.stringificationTemplate.forEach(st => {
+          this.outputText = settings.stringificationTemplate.map(st => {
+            /*
             // ipcRenderer.send('consoleLog', typeof st);
             let stringToAppend;
 
@@ -268,26 +272,37 @@ export class AppComponent implements OnInit {
               stringToAppend = st.toString();
             }
 
-            if (stringToAppend) {
-              outputText = outputText + separator + stringToAppend;
+            // if (stringToAppend) {
+            //   outputText = outputText + separator + stringToAppend;
+            // }
+
+            // separator = ' ';
+            return stringToAppend || '';
+             */
+
+            if (typeof st !== 'number' || st < 0 || st >= regexMatchResults.length) {
+              return st.toString();
+            } else if (st === settings.specialTimeOfDayIndex) {
+              // ipcRenderer.send('consoleLog', 'Calling constructSpecialTimeOfDay');
+              return this.constructSpecialTimeOfDay(regexMatchResults[st].match);
+            } else {
+              return regexMatchResults[st].match.toString();
             }
+          }).join(' ');
 
-            separator = ' ';
-          });
-
-          // return outputText;
-
-          // ****
-
-          console.log('regexMatchResults is', regexMatchResults);
+          // console.log('regexMatchResults is', regexMatchResults);
           // this.outputText = intervalId.toString() + ' ' + regexMatchResults.map(rmr => rmr.match).join(', ');
           // this.outputText = intervalId.toString() + ' ' + outputText;
-          this.outputText = outputText;
-          console.log('outputText is', this.outputText);
+          // this.outputText = outputText;
+          // console.log('outputText is', this.outputText);
 
-          this.max = settings.timerIntervalInMilliseconds / 1000;
-          this.reset();
-          this.myInterval = interval(100);
+          const incrementSizeInMilliseconds = 100;
+
+          // this.max = settings.timerIntervalInMilliseconds / 1000;
+          this.max = settings.timerIntervalInMilliseconds;
+          this.current = this.max;
+          // this.reset();
+          this.myInterval = interval(incrementSizeInMilliseconds);
 
           this.myIntervalSubscription = this.myInterval
             // .pipe(
@@ -295,9 +310,11 @@ export class AppComponent implements OnInit {
               // tap(i => this.current += 0.1)
             // )
             .subscribe(_ => {
-              this.current += 0.1;
+              // this.current += 0.1;
+              this.current -= incrementSizeInMilliseconds;
 
-              if (this.currentVal >= this.maxVal) {
+              // if (this.currentVal >= this.maxVal) {
+              if (this.currentVal <= 0) {
                 this.myIntervalSubscription.unsubscribe();
                 this.myIntervalSubscription = null;
                 this.myInterval = null;
@@ -310,18 +327,17 @@ export class AppComponent implements OnInit {
           this.outputText = 'Get: Error';
         }
       );
-      // });
   }
 
   /// Finish timer
-  finish() {
-    this.current = this.max;
-  }
+  // finish() {
+  //   this.current = this.max;
+  // }
 
   /// Reset timer
-  reset() {
-    this.current = 0;
-  }
+  // reset() {
+  //   this.current = 0;
+  // }
 
   /// Getters to prevent NaN errors
 
@@ -333,7 +349,7 @@ export class AppComponent implements OnInit {
     return isNaN(this.current) || this.current < 0 ? 0 : this.current;
   }
 
-  get isFinished() {
-    return this.currentVal >= this.maxVal;
-  }
+  // get isFinished() {
+  //   return this.currentVal >= this.maxVal;
+  // }
 }
