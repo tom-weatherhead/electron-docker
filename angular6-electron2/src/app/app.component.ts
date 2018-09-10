@@ -96,13 +96,19 @@ const httpOptions = {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   max     = 1;
   current = 0;
   outputText = 'Zero';
+  myInterval = null;
+  myIntervalSubscription = null;
 
   constructor(
     private http: HttpClient) {
+  }
+
+  ngOnInit() {
+    this.start();
   }
 
   padToTwoDigits(n) {
@@ -169,21 +175,10 @@ export class AppComponent {
   }
 
   start() {
-    /*
-    const myInterval = interval(100);
-
-    myInterval
-      .pipe(
-        takeWhile(_ => !this.isFinished ),
-        tap(i => this.current += 0.1)
-      )
-      .subscribe();
-    */
-
     // this.outputText = 'One';
 
     const scrapeIntervalLengthInMilliseconds = 10000;
-    const scrapeInterval = interval(scrapeIntervalLengthInMilliseconds);
+    // const scrapeInterval = interval(scrapeIntervalLengthInMilliseconds);
     // const url = 'https://httpbin.org/json';
     // const url = 'https://ca.finance.yahoo.com/quote/CADUSD%3DX';
     const url = 'https://ca.finance.yahoo.com/quote/USDCAD%3DX';
@@ -208,93 +203,114 @@ export class AppComponent {
 
     console.log('start(); scrapeIntervalLengthInMilliseconds is', scrapeIntervalLengthInMilliseconds);
 
-    scrapeInterval.subscribe(intervalId => {
-      console.log('scrapeInterval: intervalId is', intervalId);
+    // scrapeInterval.subscribe(intervalId => {
+    // console.log('scrapeInterval: intervalId is', intervalId);
 
-      this.http.get(url, { responseType: 'text' })
-        .subscribe(
-          (s: any) => {
-            // console.log('HTTP GET succeeded : s is', s);
-            console.log('HTTP GET succeeded.');
-            // this.outputText = 'Get: Success';
-            // this.outputText = 'Get: ' + s.slideshow.author;
+    this.http.get(url, { responseType: 'text' })
+      .subscribe(
+        (s: any) => {
+          // console.log('HTTP GET succeeded : s is', s);
+          console.log('HTTP GET succeeded.');
+          // this.outputText = 'Get: Success';
+          // this.outputText = 'Get: ' + s.slideshow.author;
 
-            const body = s;
-            const regexMatchResults = regexes.map(regex => {
-              const matchResult = { regex: regex, match: '', matches: [] };
+          const body = s;
+          const regexMatchResults = regexes.map(regex => {
+            const matchResult = { regex: regex, match: '', matches: [] };
 
-              // See https://stackoverflow.com/questions/432493/how-do-you-access-the-matched-groups-in-a-javascript-regular-expression
+            // See https://stackoverflow.com/questions/432493/how-do-you-access-the-matched-groups-in-a-javascript-regular-expression
 
-              const indexOfCaptureGroup = 1;
-              let match;
+            const indexOfCaptureGroup = 1;
+            let match;
 
-              while ((match = regex.exec(body)) !== null) {
-                matchResult.matches.push(match[indexOfCaptureGroup]);
+            while ((match = regex.exec(body)) !== null) {
+              matchResult.matches.push(match[indexOfCaptureGroup]);
 
-                if (!regex.global) {
-                  // See https://stackoverflow.com/questions/31969913/why-does-this-regexp-exec-cause-an-infinite-loop
-                  break;
-                }
+              if (!regex.global) {
+                // See https://stackoverflow.com/questions/31969913/why-does-this-regexp-exec-cause-an-infinite-loop
+                break;
               }
+            }
 
-              if (matchResult.matches.length > 0) {
-                matchResult.match = matchResult.matches[0];
-              }
+            if (matchResult.matches.length > 0) {
+              matchResult.match = matchResult.matches[0];
+            }
 
-              return matchResult;
-            });
+            return matchResult;
+          });
 
-            // ****
+          // ****
 
-            const settings = {
-              stringificationTemplate: stringificationTemplate,
-              specialTimeOfDayIndex: specialTimeOfDayIndex,
-              timerIntervalInMilliseconds: scrapeIntervalLengthInMilliseconds
-            };
-            let outputText = '';
-            let separator = '';
+          const settings = {
+            stringificationTemplate: stringificationTemplate,
+            specialTimeOfDayIndex: specialTimeOfDayIndex,
+            timerIntervalInMilliseconds: scrapeIntervalLengthInMilliseconds
+          };
+          let outputText = '';
+          let separator = '';
 
-            settings.stringificationTemplate.forEach(st => {
-              // ipcRenderer.send('consoleLog', typeof st);
-              let stringToAppend;
+          settings.stringificationTemplate.forEach(st => {
+            // ipcRenderer.send('consoleLog', typeof st);
+            let stringToAppend;
 
-              if (typeof st === 'number' && st >= 0 && st < regexMatchResults.length) {
-                // ipcRenderer.send('consoleLog', 'st is a number');
-                // ipcRenderer.send('consoleLog', st);
-                // ipcRenderer.send('consoleLog', settings.specialTimeOfDayIndex);
+            if (typeof st === 'number' && st >= 0 && st < regexMatchResults.length) {
+              // ipcRenderer.send('consoleLog', 'st is a number');
+              // ipcRenderer.send('consoleLog', st);
+              // ipcRenderer.send('consoleLog', settings.specialTimeOfDayIndex);
 
-                if (st === settings.specialTimeOfDayIndex) {
-                  // ipcRenderer.send('consoleLog', 'Calling constructSpecialTimeOfDay');
-                  stringToAppend = this.constructSpecialTimeOfDay(regexMatchResults[st].match);
-                } else {
-                  stringToAppend = regexMatchResults[st].match.toString();
-                }
+              if (st === settings.specialTimeOfDayIndex) {
+                // ipcRenderer.send('consoleLog', 'Calling constructSpecialTimeOfDay');
+                stringToAppend = this.constructSpecialTimeOfDay(regexMatchResults[st].match);
               } else {
-                stringToAppend = st.toString();
+                stringToAppend = regexMatchResults[st].match.toString();
               }
+            } else {
+              stringToAppend = st.toString();
+            }
 
-              if (stringToAppend) {
-                outputText = outputText + separator + stringToAppend;
+            if (stringToAppend) {
+              outputText = outputText + separator + stringToAppend;
+            }
+
+            separator = ' ';
+          });
+
+          // return outputText;
+
+          // ****
+
+          console.log('regexMatchResults is', regexMatchResults);
+          // this.outputText = intervalId.toString() + ' ' + regexMatchResults.map(rmr => rmr.match).join(', ');
+          // this.outputText = intervalId.toString() + ' ' + outputText;
+          this.outputText = outputText;
+          console.log('outputText is', this.outputText);
+
+          this.max = settings.timerIntervalInMilliseconds / 1000;
+          this.reset();
+          this.myInterval = interval(100);
+
+          this.myIntervalSubscription = this.myInterval
+            // .pipe(
+              // takeWhile(_ => !this.isFinished ),
+              // tap(i => this.current += 0.1)
+            // )
+            .subscribe(_ => {
+              this.current += 0.1;
+
+              if (this.currentVal >= this.maxVal) {
+                this.myIntervalSubscription.unsubscribe();
+                this.myIntervalSubscription = null;
+                this.myInterval = null;
+                this.start();
               }
-
-              separator = ' ';
             });
-
-            // return outputText;
-
-            // ****
-
-            console.log('regexMatchResults is', regexMatchResults);
-            // this.outputText = intervalId.toString() + ' ' + regexMatchResults.map(rmr => rmr.match).join(', ');
-            this.outputText = intervalId.toString() + ' ' + outputText;
-            console.log('outputText is', this.outputText);
-          },
-          f => {
-            console.error('HTTP GET failed : f is', f);
-            this.outputText = 'Get: Error';
-          }
-        );
-      });
+        },
+        f => {
+          console.error('HTTP GET failed : f is', f);
+          this.outputText = 'Get: Error';
+        }
+      );
+      // });
   }
 
   /// Finish timer
