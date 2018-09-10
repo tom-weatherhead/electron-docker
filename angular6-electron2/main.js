@@ -1,7 +1,24 @@
 const os = require('os');
-const { app, BrowserWindow, Tray } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray } = require('electron');
 
 let win;
+
+ipcMain.on('consoleLog', function(event, data) {
+	console.log(data);
+});
+
+ipcMain.on('consoleError', function(event, data) {
+	console.error(data);
+});
+
+function isPlatformWindows () {
+  const platform = os.platform();
+
+  //console.log('platform is', platform);
+
+  //const isWindows = platform === 'win32';
+  return platform === 'win32';
+}
 
 function createWindow () {
   // Create the browser window.
@@ -9,10 +26,12 @@ function createWindow () {
     width: 600,
     height: 600,
     backgroundColor: '#ffffff',
-    icon: `file://${__dirname}/dist/assets/logo.png`
+    // icon: `file://${__dirname}/dist/assets/logo.png`
+    icon: 'assets/logo.png'
   });
 
-  win.loadURL(`file://${__dirname}/dist/index.html`);
+  // win.loadURL(`file://${__dirname}/dist/index.html`);
+	win.loadFile('dist/index.html');
 
   //// uncomment below to open the DevTools.
   // win.webContents.openDevTools()
@@ -22,11 +41,12 @@ function createWindow () {
     win = null
   });
 
-  const platform = os.platform();
+  // const platform = os.platform();
 
-  console.log('platform is', platform);
+  // console.log('platform is', platform);
 
-  const isWindows = platform === 'win32';
+  // const isWindows = platform === 'win32';
+  const isWindows = isPlatformWindows();
   const faviconFilename = isWindows ? 'favicon.ico' : 'favicon1_32x32.png';
 	//const tray = new Tray('./assets/favicon.ico'); // Windows 10
 	//const tray = new Tray('./assets/favicon1_32x32.png'); // Ubuntu 18.04
@@ -47,11 +67,12 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
     app.quit();
   }
-})
+});
 
 app.on('activate', function () {
   // macOS specific close process
-  if (win === null) {
+  // if (win === null) {
+  if (!win) {
     createWindow();
   }
-})
+});
