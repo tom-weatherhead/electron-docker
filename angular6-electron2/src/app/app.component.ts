@@ -5,6 +5,8 @@ import { HttpClient /*, HttpHeaders */ } from '@angular/common/http';
 
 // import get from 'lodash/get';
 
+import { /* Config, */ ConfigService } from './services/config/config.service';
+
 import { SimpleDataGridComponent } from './components/simple-data-grid/simple-data-grid.component';
 
 // Contents of settings.json :
@@ -153,10 +155,15 @@ export class AppComponent implements OnInit {
   gridData: any[] = [{ securityName: 'USD:CAD' }];
 
   constructor(
+    private configService: ConfigService,
     private http: HttpClient) {
   }
 
   ngOnInit() {
+    this.configService.getConfig().subscribe(config => {
+      console.log('AppComponent.ngOnInit() : config is', config);
+    });
+
     this.start();
   }
 

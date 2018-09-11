@@ -1,0 +1,5 @@
+{
+	"serviceURLs": {
+		"university": "http://localhost:3000/u/"
+	}
+}
