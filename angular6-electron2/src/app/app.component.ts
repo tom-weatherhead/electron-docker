@@ -121,6 +121,12 @@ const httpOptions = {
 
 // const scrapeIntervalLengthInMilliseconds = 10000;
 
+/*
+  TODO:
+  - Config service
+  - fooGrid component
+ */
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -135,6 +141,28 @@ export class AppComponent implements OnInit {
   outputText = 'Starting...';
   myInterval = null;
   myIntervalSubscription = null;
+  useGrid: Boolean = false;
+  // useGrid: Boolean = true;
+  /*
+  gridColumns: any[] = [
+    { name: 'colA', label: 'I' },
+    { name: 'colB', label: 'II' },
+    { name: 'colC', label: 'III' }
+  ];
+  gridData: any[] = [
+    { colA: 2, colB: 3, colC: 5 },
+    { colA: 7, colB: 11, colC: 13 }
+  ];
+  */
+  gridColumns: any[] = [
+    { name: 'securityName', label: 'Name' },
+    { name: 2, label: 'Value' },
+    { name: 3, label: 'Change' },
+    { name: 0, label: 'Bid' },
+    { name: 1, label: 'Ask' },
+    { name: 4, label: 'Time' }
+  ];
+  gridData: any[] = [{ securityName: 'USD:CAD' }];
 
   constructor(
     private http: HttpClient) {
@@ -290,7 +318,13 @@ export class AppComponent implements OnInit {
             }
           }).join(' ');
 
-          // console.log('regexMatchResults is', regexMatchResults);
+          this.gridData[0][2] = regexMatchResults[2].match.toString(); // Value
+          this.gridData[0][3] = regexMatchResults[3].match.toString(); // Change
+          this.gridData[0][0] = regexMatchResults[0].match.toString(); // Bid
+          this.gridData[0][1] = regexMatchResults[1].match.toString(); // Ask
+          this.gridData[0][4] = this.constructSpecialTimeOfDay(regexMatchResults[4].match.toString()); // Time
+
+                  // console.log('regexMatchResults is', regexMatchResults);
           // this.outputText = intervalId.toString() + ' ' + regexMatchResults.map(rmr => rmr.match).join(', ');
           // this.outputText = intervalId.toString() + ' ' + outputText;
           // this.outputText = outputText;

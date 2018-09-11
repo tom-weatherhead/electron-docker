@@ -1,42 +1,57 @@
 <main class="content">
-  <!-- <h1>Exchange Rate Scraper</h1> -->
-  <h1>{{ title }}</h1>
+  <div *ngIf="useGrid; else roundProgress">
+    <h1>Exchange Rate Scraper</h1>
 
-  <div class="progress-wrapper" *ngIf="maxVal">
-    <!-- {{ max - current | number: '1.1-1' }} -->
-    <!-- <div class="text" *ngIf="!isFinished"> -->
-    <div class="text">
-      {{ current / 1000 | number: '1.1-1' }}
+    <table class="fooGrid">
+      <tr>
+        <th *ngFor="let column of gridColumns">{{ column.label }}</th>
+      </tr>
+      <tr *ngFor="let row of gridData">
+        <td *ngFor="let column of gridColumns">{{ row[column.name] }}</td>
+      </tr>
+    </table>
+  </div>
+  <ng-template #roundProgress>
+    <h1>{{ title }}</h1>
+
+    <div class="progress-wrapper" *ngIf="maxVal">
+      <!-- {{ max - current | number: '1.1-1' }} -->
+      <!-- <div class="text" *ngIf="!isFinished"> -->
+      <div class="text">
+        {{ current / 1000 | number: '1.1-1' }}
+      </div>
+
+      <!--
+      <div class="text" *ngIf="isFinished">
+        ding!
+        <audio src="assets/chime.mp3" autoplay></audio>
+      </div>
+      -->
+
+      <round-progress
+        [max]="maxVal"
+        [current]="currentVal"
+        [radius]="100"
+        [stroke]="25">
+      </round-progress>
     </div>
 
     <!--
-    <div class="text" *ngIf="isFinished">
-      ding!
-      <audio src="assets/chime.mp3" autoplay></audio>
+    <div class="controls-wrapper">
+      <div>
+        <label>Seconds</label>
+        <input class="input" placeholder="number of seconds" type="text"
+          [(ngModel)]="max"
+          (keydown)="reset()">
+      </div>
+
+      <button class="button is-info" *ngIf="currentVal <= 0" (click)="start()">Start</button>
+      <button class="button is-danger" *ngIf="!isFinished" (click)="finish()">Finish</button>
     </div>
     -->
 
-    <round-progress
-      [max]="maxVal"
-      [current]="currentVal"
-      [radius]="100"
-      [stroke]="25">
-    </round-progress>
-  </div>
+    <span id="output">{{ outputText }}</span>
+  </ng-template>
 
-  <!--
-  <div class="controls-wrapper">
-    <div>
-      <label>Seconds</label>
-      <input class="input" placeholder="number of seconds" type="text"
-        [(ngModel)]="max"
-        (keydown)="reset()">
-    </div>
-
-    <button class="button is-info" *ngIf="currentVal <= 0" (click)="start()">Start</button>
-    <button class="button is-danger" *ngIf="!isFinished" (click)="finish()">Finish</button>
-  </div>
-  -->
-
-  <span id="output">{{ outputText }}</span>
+  <button class="button is-info" (click)="useGrid = !useGrid;">Presto</button>
 </main>
