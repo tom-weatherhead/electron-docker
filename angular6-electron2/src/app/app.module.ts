@@ -7,9 +7,12 @@ import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms'; // <-- here
 import { RoundProgressModule } from 'angular-svg-round-progressbar'; // <-- here
 
+import { SimpleDataGridComponent } from './components/simple-data-grid/simple-data-grid.component';
+
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SimpleDataGridComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,11 @@
+<div>
+  <!-- <table class="fooGrid"> -->
+  <table>
+    <tr>
+      <th *ngFor="let column of gridColumns">{{ column.label }}</th>
+    </tr>
+    <tr *ngFor="let row of gridData">
+      <td *ngFor="let column of gridColumns">{{ row[column.name] }}</td>
+    </tr>
+  </table>
+</div>

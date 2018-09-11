@@ -5,6 +5,8 @@ import { HttpClient /*, HttpHeaders */ } from '@angular/common/http';
 
 // import get from 'lodash/get';
 
+import { SimpleDataGridComponent } from './components/simple-data-grid/simple-data-grid.component';
+
 // Contents of settings.json :
 
 /*
@@ -124,7 +126,6 @@ const httpOptions = {
 /*
   TODO:
   - Config service
-  - fooGrid component
  */
 
 @Component({
@@ -133,8 +134,6 @@ const httpOptions = {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  // max     = 1;
-  // current = 0;
   title = settings.label || 'Exchange Rate Scraper';
   max     = settings.timerIntervalInMilliseconds;
   current = settings.timerIntervalInMilliseconds;
@@ -143,17 +142,6 @@ export class AppComponent implements OnInit {
   myIntervalSubscription = null;
   useGrid: Boolean = false;
   // useGrid: Boolean = true;
-  /*
-  gridColumns: any[] = [
-    { name: 'colA', label: 'I' },
-    { name: 'colB', label: 'II' },
-    { name: 'colC', label: 'III' }
-  ];
-  gridData: any[] = [
-    { colA: 2, colB: 3, colC: 5 },
-    { colA: 7, colB: 11, colC: 13 }
-  ];
-  */
   gridColumns: any[] = [
     { name: 'securityName', label: 'Name' },
     { name: 2, label: 'Value' },
@@ -269,44 +257,7 @@ export class AppComponent implements OnInit {
             return matchResult;
           });
 
-          // ****
-
-          // const settings = {
-          //   stringificationTemplate: stringificationTemplate,
-          //   specialTimeOfDayIndex: specialTimeOfDayIndex,
-          //   timerIntervalInMilliseconds: scrapeIntervalLengthInMilliseconds
-          // };
-          // let outputText = '';
-          // let separator = '';
-
-          // settings.stringificationTemplate.forEach(st => {
           this.outputText = settings.stringificationTemplate.map(st => {
-            /*
-            // ipcRenderer.send('consoleLog', typeof st);
-            let stringToAppend;
-
-            if (typeof st === 'number' && st >= 0 && st < regexMatchResults.length) {
-              // ipcRenderer.send('consoleLog', 'st is a number');
-              // ipcRenderer.send('consoleLog', st);
-              // ipcRenderer.send('consoleLog', settings.specialTimeOfDayIndex);
-
-              if (st === settings.specialTimeOfDayIndex) {
-                // ipcRenderer.send('consoleLog', 'Calling constructSpecialTimeOfDay');
-                stringToAppend = this.constructSpecialTimeOfDay(regexMatchResults[st].match);
-              } else {
-                stringToAppend = regexMatchResults[st].match.toString();
-              }
-            } else {
-              stringToAppend = st.toString();
-            }
-
-            // if (stringToAppend) {
-            //   outputText = outputText + separator + stringToAppend;
-            // }
-
-            // separator = ' ';
-            return stringToAppend || '';
-             */
 
             if (typeof st !== 'number' || st < 0 || st >= regexMatchResults.length) {
               return st.toString();
@@ -324,18 +275,12 @@ export class AppComponent implements OnInit {
           this.gridData[0][1] = regexMatchResults[1].match.toString(); // Ask
           this.gridData[0][4] = this.constructSpecialTimeOfDay(regexMatchResults[4].match.toString()); // Time
 
-                  // console.log('regexMatchResults is', regexMatchResults);
-          // this.outputText = intervalId.toString() + ' ' + regexMatchResults.map(rmr => rmr.match).join(', ');
-          // this.outputText = intervalId.toString() + ' ' + outputText;
-          // this.outputText = outputText;
           // console.log('outputText is', this.outputText);
 
           const incrementSizeInMilliseconds = 100;
 
-          // this.max = settings.timerIntervalInMilliseconds / 1000;
           this.max = settings.timerIntervalInMilliseconds;
           this.current = this.max;
-          // this.reset();
           this.myInterval = interval(incrementSizeInMilliseconds);
 
           this.myIntervalSubscription = this.myInterval

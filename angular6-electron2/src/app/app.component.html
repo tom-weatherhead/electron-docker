@@ -2,14 +2,7 @@
   <div *ngIf="useGrid; else roundProgress">
     <h1>Exchange Rate Scraper</h1>
 
-    <table class="fooGrid">
-      <tr>
-        <th *ngFor="let column of gridColumns">{{ column.label }}</th>
-      </tr>
-      <tr *ngFor="let row of gridData">
-        <td *ngFor="let column of gridColumns">{{ row[column.name] }}</td>
-      </tr>
-    </table>
+    <app-simple-data-grid [gridColumns]="gridColumns" [gridData]="gridData"></app-simple-data-grid>
   </div>
   <ng-template #roundProgress>
     <h1>{{ title }}</h1>
