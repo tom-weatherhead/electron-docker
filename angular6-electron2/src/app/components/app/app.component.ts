@@ -5,9 +5,9 @@ import { HttpClient /*, HttpHeaders */ } from '@angular/common/http';
 
 // import get from 'lodash/get';
 
-import { /* Config, */ ConfigService } from './services/config/config.service';
+import { /* Config, */ ConfigService } from '../../services/config/config.service';
 
-import { SimpleDataGridComponent } from './components/simple-data-grid/simple-data-grid.component';
+import { SimpleDataGridComponent } from '../simple-data-grid/simple-data-grid.component';
 
 // Contents of settings.json :
 

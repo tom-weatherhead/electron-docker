@@ -7,7 +7,7 @@ import { RoundProgressModule } from 'angular-svg-round-progressbar'; // <-- here
 
 import { ConfigService } from './services/config/config.service';
 
-import { AppComponent } from './app.component';
+import { AppComponent } from './components/app/app.component';
 import { SimpleDataGridComponent } from './components/simple-data-grid/simple-data-grid.component';
 
 @NgModule({
