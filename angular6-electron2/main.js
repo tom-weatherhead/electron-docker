@@ -20,6 +20,10 @@ function isPlatformWindows () {
   return platform === 'win32';
 }
 
+function getRandomArrayElement(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
@@ -42,15 +46,12 @@ function createWindow () {
     win = null
   });
 
-  // const platform = os.platform();
-
-  // console.log('platform is', platform);
-
-  // const isWindows = platform === 'win32';
   const isWindows = isPlatformWindows();
-  const faviconFilename = isWindows ? 'favicon.ico' : 'favicon1_32x32.png';
-	//const tray = new Tray('./assets/favicon.ico'); // Windows 10
-	//const tray = new Tray('./assets/favicon1_32x32.png'); // Ubuntu 18.04
+  const faviconFilenameList = isWindows
+    ? ['favicon1.4bit.ico', 'favicon2.4bit.ico']
+    : ['favicon1_32x32.png', 'favicon2_32x32.png', 'favicon3.32x32.png', 'favicon4.png', 'favicon5.png'];
+  // const faviconFilename = isWindows ? 'favicon.ico' : 'favicon1_32x32.png';
+  const faviconFilename = getRandomArrayElement(faviconFilenameList);
 	const tray = new Tray('./dist/assets/' + faviconFilename);
 
 	tray.on('click', () => {
