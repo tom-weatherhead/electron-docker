@@ -24,7 +24,7 @@
 		"scraper"
 	],
 	"dependencies": {
-		"electron": "<3",
+		"electron": "<12",
 		"http-get-regex-capture": "^0.1.1"
 	},
 	"author": "Tom Weatherhead <null@2hrd4u.org> (https://httpbin.org/status/418)",
